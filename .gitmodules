@@ -1,0 +1,3 @@
+[submodule "vendor/premake/modules/codeblocks"]
+	path = vendor/premake/modules/codeblocks
+	url = https://github.com/chris-be/premake-codeblocks.git

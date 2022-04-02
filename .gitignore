@@ -1,0 +1,19 @@
+#Directories
+bin/
+bin-int/
+
+#Visual Studio Files
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
+
+#CodeBlocks Files
+**.cbp
+**.workspace
+**.layout
+**.workspace.layout
+
+#Directories
+scripts/__pycache__
