@@ -8,11 +8,11 @@ require "vendor/premake/modules/codeblocks"
 		"Release"
 	}
 	
-	  platforms
-	  {
-		  "x86",
-		  "x86_64"
-	  }
+	platforms
+	{
+		"x86",
+		"x86_64"
+	}
 	
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 	
