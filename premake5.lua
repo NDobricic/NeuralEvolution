@@ -32,6 +32,11 @@ project "Simulator"
 		"%{prj.name}/res/**"
 	}
 	
+	includedirs
+	{
+		"Simulator/vendor/spdlog/include"
+	}
+	
 	filter "system:Windows"
 		systemversion "latest"
 		
