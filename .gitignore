@@ -8,6 +8,7 @@ bin-int/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+**.log
 
 #CodeBlocks Files
 **.cbp
