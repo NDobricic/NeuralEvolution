@@ -1,7 +1,12 @@
-#include <iostream>
+#include "Core.h"
 
-int main()
+#include "simulation/Simulation.h"
+
+int main(int argc, char* argv[])
 {
-	std::cout << "Hello World!" << std::endl;
+	evol::Log::Init();
+
+	evol::StartSimulation(argc, argv);
+
 	return 0;
 }
