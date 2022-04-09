@@ -9,6 +9,8 @@ namespace evol
 		uint16_t numCreatures;
 		uint16_t mapSizeX;
 		uint16_t mapSizeY;
+
+		std::string outputPath;
 	};
 
 	class ConfigManager

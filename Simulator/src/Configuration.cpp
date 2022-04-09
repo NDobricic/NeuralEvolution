@@ -42,14 +42,28 @@ namespace evol
 			}
 
 			std::string paramName = line.substr(0, equalsPos);
-			int paramValue = std::stoi(line.substr(equalsPos + 1));
+			std::string paramValue = line.substr(equalsPos + 1);
 
-			if (paramName == "numCreatures") configObj.numCreatures = paramValue;
-			else if (paramName == "mapSizeX") configObj.mapSizeX = paramValue;
-			else if (paramName == "mapSizeY") configObj.mapSizeY = paramValue;
+			if (paramValue == "true") paramValue = "1";
+			else if (paramValue == "false") paramValue = "0";
+
+			int32_t paramInt; uint32_t paramUInt;
+			int16_t paramUShort;
+			float paramFloat; bool paramBool;
+
+			bool isInt = utils::TryParseString(paramValue, paramInt);
+			bool isUInt = utils::TryParseString(paramValue, paramUInt);
+			bool isUShort = utils::TryParseString(paramValue, paramUShort);
+			bool isFloat = utils::TryParseString(paramValue, paramFloat);
+			bool isBool = utils::TryParseString(paramValue, paramBool);
+
+			if (paramName == "numCreatures" && isUShort) configObj.numCreatures = paramUShort;
+			else if (paramName == "mapSizeX" && isUShort) configObj.mapSizeX = paramUShort;
+			else if (paramName == "mapSizeY" && isUShort) configObj.mapSizeY = paramUShort;
+			else if (paramName == "outputPath") configObj.outputPath = paramValue;
 			else
 			{
-				LOG_WARN("Unknown parameter '{0}' at line {1}.", paramName, lineNum);
+				LOG_WARN("Unable to load parameter '{0}' at line {1}.", paramName, lineNum);
 			}
 		}
 
@@ -67,6 +81,7 @@ namespace evol
 		stream << "numCreatures = " << configObj.numCreatures << "\n";
 		stream << "mapSizeX = " << configObj.mapSizeX << "\n";
 		stream << "mapSizeY = " << configObj.mapSizeY << "\n";
+		stream << "outputPath = " << configObj.outputPath << "\n";
 		stream.flush();
 
 
