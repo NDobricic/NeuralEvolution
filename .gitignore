@@ -1,6 +1,8 @@
 #Directories
 bin/
 bin-int/
+Simulator/output/
+GUI/obj/
 
 #Visual Studio Files
 .vs/
@@ -8,6 +10,8 @@ bin-int/
 **.vcxproj
 **.vcxproj.filters
 **.vcxproj.user
+**.csproj
+**.csproj.user
 **.log
 
 #CodeBlocks Files

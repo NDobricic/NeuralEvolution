@@ -2,6 +2,7 @@
 
 #include <string>
 #include <sstream>
+#include <Windows.h>
 
 namespace utils
 {
@@ -16,5 +17,7 @@ namespace utils
 
 		return false;
 	}
+
+	char* ReadFromPipe(HANDLE fileHandle, bool waitForInput);
 
 }
