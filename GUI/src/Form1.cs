@@ -16,17 +16,18 @@ namespace GUI
 {
     public partial class Form1 : Form
     {
-        const string simPath = "..\\Simulator";
-        const string logPath = "gui.log";
-
         SKBitmap[] bitmaps;
         Process simProcess;
         NamedPipeServerStream namedPipeServer;
         StreamWriter pipeWriter;
 
+        bool animPlaying = false;
+
         public Form1()
         {
             InitializeComponent();
+
+            numericUpDown.Controls[0].Visible = false;
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -36,14 +37,23 @@ namespace GUI
 
             try
             {
-                ostrm = new FileStream(logPath, FileMode.OpenOrCreate, FileAccess.Write);
+                ostrm = new FileStream(Config.LogPath, FileMode.OpenOrCreate, FileAccess.Write);
                 writer = new StreamWriter(ostrm);
+                writer.AutoFlush = true;
 
                 Console.SetOut(writer);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Cannot open {logPath} for logging: {ex.Message}. Exiting...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Cannot open {Config.LogPath} for logging: {ex.Message}. Exiting...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
+            bool success = Config.LoadFromFile("..\\config.ini");
+            if(!success)
+            {
+                MessageBox.Show("An error has occured while loading settings. Exiting...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Console.WriteLine("An error has occured while loading settings. Exiting...");
                 return;
             }
         }
@@ -56,8 +66,8 @@ namespace GUI
                 namedPipeServer = new NamedPipeServerStream("evolpipe", PipeDirection.InOut, 1, PipeTransmissionMode.Byte);
 
                 Console.WriteLine("Starting the simulation process...");
-                var simProcessInfo = new ProcessStartInfo(Path.Combine(simPath, "Simulator.exe"));
-                simProcessInfo.WorkingDirectory = simPath;
+                var simProcessInfo = new ProcessStartInfo(Path.Combine(Config.SimPath, "Simulator.exe"));
+                simProcessInfo.WorkingDirectory = Config.SimPath;
 
                 simProcess = new Process();
                 simProcess.StartInfo = simProcessInfo;
@@ -122,31 +132,33 @@ namespace GUI
             try
             {
                 Console.WriteLine("Loading info file...");
-                byte[] infoArr = File.ReadAllBytes(Path.Combine(simPath, "output", "info"));
+                byte[] infoArr = File.ReadAllBytes(Path.Combine(Config.SimPath, Config.OutputPath, "info"));
                 int numCycles = Math.Min(BitConverter.ToInt32(infoArr, 0), 30000);
 
                 Console.WriteLine("Generating bitmaps...");
                 bitmaps = new SKBitmap[numCycles];
                 for (int i = 0; i < numCycles; i++)
                 {
-                    bitmaps[i] = new SKBitmap(256, 256);
+                    bitmaps[i] = new SKBitmap(Config.MapSizeX, Config.MapSizeY);
                     bitmaps[i].Erase(SKColors.White);
                 }
 
                 numericUpDown.Maximum = numCycles - 1;
 
-                for (int i = 0; i < 50; i++)
+                for (int i = 0; i < Config.NumCreatures; i++)
                 {
-                    byte[] arr = File.ReadAllBytes(Path.Combine(simPath, "output", i.ToString()));
+                    byte[] arr = File.ReadAllBytes(Path.Combine(Config.SimPath, "output", i.ToString()));
 
                     int startCycle = BitConverter.ToInt32(arr, 0);
 
+                    var color = new SKColor(arr[4], arr[5], arr[6]);
+
                     for (int j = 0; j < numCycles; j++)
                     {
-                        Int16 posX = BitConverter.ToInt16(arr, 7 + j * 4);
-                        Int16 posY = BitConverter.ToInt16(arr, 7 + j * 4 + 2);
+                        UInt16 posX = BitConverter.ToUInt16(arr, 7 + j * 4);
+                        UInt16 posY = BitConverter.ToUInt16(arr, 7 + j * 4 + 2);
 
-                        bitmaps[j].SetPixel(posX, posY, SKColors.Green);
+                        bitmaps[j].SetPixel(posX, posY, color);
                     }
                 }
 
@@ -159,7 +171,7 @@ namespace GUI
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error while loading data. Check {logPath} for more details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Error while loading data. Check {Config.LogPath} for more details.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Console.WriteLine($"Error while loading data: {ex.Message}");
             }
             finally
@@ -175,12 +187,49 @@ namespace GUI
 
             float zoom = 4.0f;
             e.Surface.Canvas.Clear(SKColors.White);
-            e.Surface.Canvas.DrawBitmap(bitmap, new SKRect(0, 0, bitmap.Width * zoom, bitmap.Height * zoom));
+
+            int minSize = Math.Min(glControl.Width, glControl.Height);
+            e.Surface.Canvas.DrawBitmap(bitmap, new SKRect(0, 0, minSize, minSize));
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
             glControl.Refresh();
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            if (animPlaying)
+                numericUpDown.Value = Math.Min(numericUpDown.Value + 1, numericUpDown.Maximum);
+        }
+
+        private void playBtn_Click(object sender, EventArgs e)
+        {
+            animPlaying = !animPlaying;
+            if (animPlaying)
+                playBtn.Text = "■";
+            else
+                playBtn.Text = "▶";
+        }
+
+        private void rewind100Btn_Click(object sender, EventArgs e)
+        {
+            numericUpDown.Value = Math.Max(numericUpDown.Value - 100, numericUpDown.Minimum);
+        }
+
+        private void prevFrameBtn_Click(object sender, EventArgs e)
+        {
+            numericUpDown.Value = Math.Max(numericUpDown.Value - 1, numericUpDown.Minimum);
+        }
+
+        private void nextFrameBtn_Click(object sender, EventArgs e)
+        {
+            numericUpDown.Value = Math.Min(numericUpDown.Value + 1, numericUpDown.Maximum);
+        }
+
+        private void skip100Btn_Click(object sender, EventArgs e)
+        {
+            numericUpDown.Value = Math.Min(numericUpDown.Value + 100, numericUpDown.Maximum);
         }
     }
 }

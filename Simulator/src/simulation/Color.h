@@ -4,6 +4,7 @@
 #include <random>
 #include <string>
 #include <assert.h>
+#include "../Random.h"
 
 namespace evol
 {
@@ -27,9 +28,9 @@ namespace evol
         static Color Random(int seed)
         {
             srand(seed);
-            return Color(rand() % 256, rand() % 256, rand() % 256);
+            return Color(Random::Next(0, 255), Random::Next(0, 255), Random::Next(0, 255));
         }
-        static Color Random() { return Random(rand()); }
+        static Color Random() { return Random(Random::Next(INT_MIN, INT_MAX)); }
 
         static constexpr Color FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) { return Color(r, g, b, a); }
         static constexpr Color FromRGBA(Color color, uint8_t a) { return Color(color.R, color.G, color.B, a); }

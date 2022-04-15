@@ -48,7 +48,7 @@ namespace evol
 			else if (paramValue == "false") paramValue = "0";
 
 			int32_t paramInt; uint32_t paramUInt;
-			int16_t paramUShort;
+			uint16_t paramUShort;
 			float paramFloat; bool paramBool;
 
 			bool isInt = utils::TryParseString(paramValue, paramInt);

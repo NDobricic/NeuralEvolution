@@ -7,7 +7,7 @@ namespace evol
 	
 	void StartSimulation(int argc, char* argv[])
 	{
-		std::string configName = (argc < 2) ? "config.ini" : argv[1];
+		std::string configName = (argc < 2) ? "../config.ini" : argv[1];
 
 		LOG_INFO("Establishing a connection between GUI and engine...");
 		HANDLE fileHandle = CreateFileW(TEXT("\\\\.\\pipe\\evolpipe")
@@ -48,9 +48,16 @@ namespace evol
 
 		for (int i = 0; i < num; i++)
 		{
+			std::vector<Gene> genome;
+			//genome.push_back(Gene(0, 0, 1, 1, 12000));
+			//genome.push_back(Gene(1, 1, 0, 2, 2000));
+			for(int j = 0; j<32; j++)
+				genome.push_back(Gene());
+
+
 			std::shared_ptr<Creature> a
-				= std::make_shared<Creature>(Creature(	Color(255, 255, 0), 100, 100, 0,
-														ConfigManager::Settings().outputPath + "/" + std::to_string(i)));
+				= std::make_shared<Creature>(	genome, Color::Random(), 100, 100, 0,
+												ConfigManager::Settings().outputPath + "/" + std::to_string(i));
 
 			creatures.push_back(a);
 		}
@@ -61,12 +68,12 @@ namespace evol
 		LOG_TRACE("Starting the main simulation loop...");
 		while (running)
 		{
-			if(cycleNumber % 10000 == 0)
+			if(cycleNumber % 10 == 0)
 				LOG_TRACE("Cycle {0}", cycleNumber);
 
-			for (auto c : creatures)
+			for (int i = 0; i < ConfigManager::Settings().numCreatures; i++)
 			{
-				c->SimulateCycle();
+				creatures[i]->SimulateCycle();
 			}
 
 			if (strcmp(utils::ReadFromPipe(fileHandle, false), "stop") == 0)

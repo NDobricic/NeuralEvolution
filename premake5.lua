@@ -34,7 +34,13 @@ project "Simulator"
 	
 	includedirs
 	{
-		"%{prj.name}/vendor/spdlog/include"
+		"%{prj.name}/vendor/spdlog/include",
+		"%{prj.name}/vendor/Eigen/Eigen"
+	}
+	
+	postbuildcommands
+	{
+		"{COPY} ../config.ini ../bin/%{outputdir}"
 	}
 	
 	filter "system:Windows"
