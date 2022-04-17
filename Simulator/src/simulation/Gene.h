@@ -23,6 +23,22 @@ struct Gene
 		return Gene(sourceType, sourceIndex, sinkType, sinkIndex, value);
 	}
 
+	void Mutate()
+	{
+		int bit = Random::Next<int>(0, 31);
+
+		if (bit >= 0 && bit < 16)
+			value = value ^ (1u << bit);
+		else if (bit >= 16 && bit < 23)
+			sinkIndex = sinkIndex ^ (1u << (bit - 16));
+		else if (bit == 23)
+			sinkType = sinkType ^ 1u;
+		else if (bit >= 24 && bit < 31)
+			sourceIndex = sourceIndex ^ (1u << (bit - 24));
+		else
+			sourceType = sourceType ^ 1u;
+	}
+
 	//Gene(const Gene& original)
 	//{
 	//	sourceType = original.sourceType;
@@ -31,6 +47,15 @@ struct Gene
 	//	sinkIndex = original.sinkIndex;
 	//	value = original.value;
 	//}
+
+	Gene()
+	{
+		sourceType = 0;
+		sourceIndex = 0;
+		sinkType = 1;
+		sinkIndex = 0;
+		value = Random::Next<int16_t>(-0x7fff, 0x7fff);
+	}
 
 	Gene(uint16_t sourceType, uint16_t sourceIndex, uint16_t sinkType, uint16_t sinkIndex, int16_t value)
 		: sourceType(sourceType), sourceIndex(sourceIndex), sinkType(sinkType), sinkIndex(sinkIndex), value(value)

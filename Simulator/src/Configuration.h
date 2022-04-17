@@ -12,6 +12,9 @@ namespace evol
 
 		uint16_t numFood;
 
+		float dotMutationChance;
+		float numericAberrationChance;
+
 		std::string outputPath;
 	};
 

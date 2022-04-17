@@ -44,7 +44,7 @@ namespace evol
 
 	public:
 		Creature(	const std::string& outputPath, int globalIndex, int32_t startCycle,
-					const Genome& genome = Genome::Random(16), Color col = Color::Random(),
+					const Genome& genome = Genome::Random(0), Color col = Color::Random(),
 					int16_t x = Random::Next<uint16_t>(0, ConfigManager::Settings().mapSizeX - 1),
 					int16_t y = Random::Next<uint16_t>(0, ConfigManager::Settings().mapSizeY - 1));
 

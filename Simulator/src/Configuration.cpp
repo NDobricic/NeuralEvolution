@@ -61,6 +61,8 @@ namespace evol
 			else if (paramName == "mapSizeX" && isUShort) configObj.mapSizeX = paramUShort;
 			else if (paramName == "mapSizeY" && isUShort) configObj.mapSizeY = paramUShort;
 			else if (paramName == "numFood" && isUShort) configObj.numFood = paramUShort;
+			else if (paramName == "dotMutationChance" && isFloat) configObj.dotMutationChance = paramFloat;
+			else if (paramName == "numericAberrationChance" && isFloat) configObj.numericAberrationChance = paramFloat;
 			else if (paramName == "outputPath") configObj.outputPath = paramValue;
 			else
 			{
@@ -82,6 +84,9 @@ namespace evol
 		stream << "numCreatures = " << configObj.numCreatures << "\n";
 		stream << "mapSizeX = " << configObj.mapSizeX << "\n";
 		stream << "mapSizeY = " << configObj.mapSizeY << "\n";
+		stream << "numFood = " << configObj.numFood << "\n";
+		stream << "dotMutationChance = " << configObj.dotMutationChance << "\n";
+		stream << "numericAberrationChance = " << configObj.numericAberrationChance << "\n";
 		stream << "outputPath = " << configObj.outputPath << "\n";
 		stream.flush();
 

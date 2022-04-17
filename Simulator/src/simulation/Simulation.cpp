@@ -40,16 +40,16 @@ namespace evol
 
 		LOG_TRACE("Current settings:\n{0}", ConfigManager::PrintSettings());
 
+		LOG_INFO("Preparing the output directory...");
+		std::filesystem::remove_all(ConfigManager::Settings().outputPath);
+		std::filesystem::create_directory(ConfigManager::Settings().outputPath);
 
 		LOG_INFO("Starting the simulation...");
 
-		LOG_TRACE("Initializing {0} creatures...", ConfigManager::Settings().numCreatures);
+		LOG_INFO("Initializing {0} creatures...", ConfigManager::Settings().numCreatures);
 		int num = ConfigManager::Settings().numCreatures;
 		std::vector<std::shared_ptr<Creature>> creatures;
 		creatures.reserve(num);
-
-		std::filesystem::remove_all(ConfigManager::Settings().outputPath);
-		std::filesystem::create_directory(ConfigManager::Settings().outputPath);
 
 		for (int i = 0; i < num; i++)
 		{
@@ -59,6 +59,7 @@ namespace evol
 			creatures.push_back(a);
 		}
 
+		LOG_INFO("Spawning {0} food...", ConfigManager::Settings().numFood);
 		MapData::Init(ConfigManager::Settings().outputPath + "/mapdata");
 		for (int i = 0; i < ConfigManager::Settings().numFood; i++)
 		{
@@ -102,7 +103,10 @@ namespace evol
 			}
 
 			if (MapData::CurrentCycle() % 1 == 0)
-				MapData::AddFood();
+			{
+				for(int i = 0; i < 1; i++)
+					MapData::AddFood();
+			}
 
 			if (strcmp(utils::ReadFromPipe(fileHandle, false), "stop") == 0)
 				running = false;

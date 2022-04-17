@@ -13,6 +13,6 @@ namespace evol
 		Genome(int length);
 		int Length() const;
 		static Genome Random(int length);
-		static Genome Combine(const Genome& a, const Genome& b);
+		static Genome Combine(const Genome& a, const Genome& b, float mutationChance = 0.0f, float numAberrChance = 0.0f);
 	};
 }

@@ -135,7 +135,8 @@ namespace evol
 
 	std::shared_ptr<Creature> Creature::Combine(const Creature& a, const Creature& b, int globalIndex)
 	{
-		Genome genome = Genome::Combine(a.genome, b.genome);
+		Genome genome = Genome::Combine(a.genome, b.genome,
+			ConfigManager::Settings().dotMutationChance, ConfigManager::Settings().numericAberrationChance);
 		Color color = Color::Combine(a.color, b.color);
 
 		auto result = std::make_shared<Creature>(a.outputPath, globalIndex, MapData::CurrentCycle(), genome, color);
