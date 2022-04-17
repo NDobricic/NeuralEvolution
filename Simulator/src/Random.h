@@ -16,4 +16,11 @@ public:
 		std::uniform_int_distribution<T> dist(min, max);
 		return dist(engine);
 	}
+
+	template<typename T>
+	static T NextReal(T min, T max)
+	{
+		std::uniform_real_distribution<T> dist(min, max);
+		return dist(engine);
+	}
 };
