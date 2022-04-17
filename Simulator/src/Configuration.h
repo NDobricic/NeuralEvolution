@@ -10,6 +10,8 @@ namespace evol
 		uint16_t mapSizeX;
 		uint16_t mapSizeY;
 
+		uint16_t numFood;
+
 		std::string outputPath;
 	};
 

@@ -107,6 +107,8 @@ namespace GUI
 
                 Console.WriteLine("Pipe successfully drained.");
 
+                simProcess.WaitForExit();
+
                 startBtn.Enabled = true;
                 stopBtn.Enabled = false;
                 numericUpDown.Enabled = true;
@@ -134,6 +136,7 @@ namespace GUI
                 Console.WriteLine("Loading info file...");
                 byte[] infoArr = File.ReadAllBytes(Path.Combine(Config.SimPath, Config.OutputPath, "info"));
                 int numCycles = Math.Min(BitConverter.ToInt32(infoArr, 0), 30000);
+                int totalCreatures = BitConverter.ToInt32(infoArr, 4);
 
                 Console.WriteLine("Generating bitmaps...");
                 bitmaps = new SKBitmap[numCycles];
@@ -145,7 +148,27 @@ namespace GUI
 
                 numericUpDown.Maximum = numCycles - 1;
 
-                for (int i = 0; i < Config.NumCreatures; i++)
+                Console.Write("Loading food data...");
+                int lineStart = 0;
+                byte[] mapdata = File.ReadAllBytes(Path.Combine(Config.SimPath, "output", "mapdata"));
+
+                for (int i = 0; i < numCycles; i++)
+                {
+                    Int32 numFood = BitConverter.ToInt32(mapdata, lineStart);
+
+                    for (int j = 0; j < numFood; j++)
+                    {
+                        UInt16 posX = BitConverter.ToUInt16(mapdata, lineStart + 4 + j * 4);
+                        UInt16 posY = BitConverter.ToUInt16(mapdata, lineStart + 4 + j * 4 + 2);
+
+                        bitmaps[i].SetPixel(posX, posY, SKColors.Red);
+                    }
+
+                    lineStart += 4 + numFood * 4;
+                }
+
+                Console.Write("Loading creature data...");
+                for (int i = 0; i < totalCreatures; i++)
                 {
                     byte[] arr = File.ReadAllBytes(Path.Combine(Config.SimPath, "output", i.ToString()));
 
@@ -153,12 +176,13 @@ namespace GUI
 
                     var color = new SKColor(arr[4], arr[5], arr[6]);
 
-                    for (int j = 0; j < numCycles; j++)
+                    for (int j = 0; 7 + j * 4 < arr.Length; j++)
                     {
                         UInt16 posX = BitConverter.ToUInt16(arr, 7 + j * 4);
                         UInt16 posY = BitConverter.ToUInt16(arr, 7 + j * 4 + 2);
 
-                        bitmaps[j].SetPixel(posX, posY, color);
+                        //bitmaps[j].SetPixel(posX, posY, color);
+                        bitmaps[startCycle + j].SetPixel(posX, posY, SKColors.Green);
                     }
                 }
 

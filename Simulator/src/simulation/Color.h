@@ -32,6 +32,16 @@ namespace evol
         }
         static Color Random() { return Random(Random::Next(INT_MIN, INT_MAX)); }
 
+        static Color Combine(Color col1, Color col2)
+        {
+            uint8_t r = (col1.R + col2.R) / 2;
+            uint8_t g = (col1.G + col2.G) / 2;
+            uint8_t b = (col1.B + col2.B) / 2;
+            uint8_t a = (col1.A + col2.A) / 2;
+
+            return Color(r, g, b, a);
+        }
+
         static constexpr Color FromRGBA(uint8_t r, uint8_t g, uint8_t b, uint8_t a) { return Color(r, g, b, a); }
         static constexpr Color FromRGBA(Color color, uint8_t a) { return Color(color.R, color.G, color.B, a); }
 

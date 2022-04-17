@@ -60,6 +60,7 @@ namespace evol
 			if (paramName == "numCreatures" && isUShort) configObj.numCreatures = paramUShort;
 			else if (paramName == "mapSizeX" && isUShort) configObj.mapSizeX = paramUShort;
 			else if (paramName == "mapSizeY" && isUShort) configObj.mapSizeY = paramUShort;
+			else if (paramName == "numFood" && isUShort) configObj.numFood = paramUShort;
 			else if (paramName == "outputPath") configObj.outputPath = paramValue;
 			else
 			{

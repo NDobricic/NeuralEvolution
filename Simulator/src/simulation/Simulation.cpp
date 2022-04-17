@@ -1,6 +1,8 @@
 #include "../Core.h"
 #include "../Configuration.h"
 #include "Creature.h"
+#include "MapData.h"
+#include <filesystem>
 
 namespace evol
 {
@@ -46,44 +48,72 @@ namespace evol
 		std::vector<std::shared_ptr<Creature>> creatures;
 		creatures.reserve(num);
 
+		std::filesystem::remove_all(ConfigManager::Settings().outputPath);
+		std::filesystem::create_directory(ConfigManager::Settings().outputPath);
+
 		for (int i = 0; i < num; i++)
 		{
-			std::vector<Gene> genome;
-			//genome.push_back(Gene(0, 0, 1, 1, 12000));
-			//genome.push_back(Gene(1, 1, 0, 2, 2000));
-			for(int j = 0; j<32; j++)
-				genome.push_back(Gene());
-
-
 			std::shared_ptr<Creature> a
-				= std::make_shared<Creature>(	genome, Color::Random(), 100, 100, 0,
-												ConfigManager::Settings().outputPath + "/" + std::to_string(i));
+				= std::make_shared<Creature>(ConfigManager::Settings().outputPath, i, 0);
 
 			creatures.push_back(a);
 		}
 
-		int cycleNumber = 0;
+		MapData::Init(ConfigManager::Settings().outputPath + "/mapdata");
+		for (int i = 0; i < ConfigManager::Settings().numFood; i++)
+		{
+			MapData::AddFood();
+		}
+
+
+		int totalCreatures = creatures.size();
 		bool running = true;
 
 		LOG_TRACE("Starting the main simulation loop...");
 		while (running)
 		{
-			if(cycleNumber % 10 == 0)
-				LOG_TRACE("Cycle {0}", cycleNumber);
+			if(MapData::CurrentCycle() % 10 == 0)
+				LOG_TRACE("Cycle {0}", MapData::cycleNum);
 
-			for (int i = 0; i < ConfigManager::Settings().numCreatures; i++)
+			MapData::SaveData();
+
+			for (int i = 0; i < creatures.size(); i++)
 			{
-				creatures[i]->SimulateCycle();
+				if (creatures[i]->Age() >= 115)
+				{
+					int randIndex = Random::Next<int>(0, creatures.size() - 1);
+					if (randIndex != i && creatures[randIndex]->Age() >= 115)
+					{
+						creatures.push_back(Creature::Combine(*creatures[i], *creatures[randIndex], totalCreatures));
+						totalCreatures++;
+						//LOG_TRACE("Combined creatures {0} and {1}", i, randIndex);
+					}
+				}
+
+				if (creatures[i]->IsDead())
+				{
+					creatures.erase(creatures.begin() + i);
+					i--;
+				}
+				else
+				{
+					creatures[i]->SimulateCycle();
+				}
 			}
+
+			if (MapData::CurrentCycle() % 1 == 0)
+				MapData::AddFood();
 
 			if (strcmp(utils::ReadFromPipe(fileHandle, false), "stop") == 0)
 				running = false;
 
-			cycleNumber++;
+			MapData::cycleNum++;
 		}
 
 		std::ofstream file(ConfigManager::Settings().outputPath + "/info");
-		file.write(reinterpret_cast<char*>(&cycleNumber), sizeof(cycleNumber));
+		int cycleNum = MapData::CurrentCycle();
+		file.write(reinterpret_cast<char*>(&cycleNum), sizeof(cycleNum));
+		file.write(reinterpret_cast<char*>(&totalCreatures), sizeof(totalCreatures));
 		file.flush();
 	}
 }
