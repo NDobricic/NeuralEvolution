@@ -107,14 +107,14 @@ namespace evol
 		outputVals = inputToOutputConn * inputVals + internalToOutputConn * internalVals;
 
 		if (Sigmoid(outputVals(0)) > 0.5)
-			posX = utils::Clamp<uint16_t>(posX + 1, 0, ConfigManager::Settings().mapSizeX - 1);
+			posX = utils::Clamp<int>((int)posX + 1, 0, ConfigManager::Settings().mapSizeX - 1);
 		else if (Sigmoid(outputVals(0)) < -0.5)
-			posX = utils::Clamp<uint16_t>(posX - 1, 0, ConfigManager::Settings().mapSizeX - 1);
+			posX = utils::Clamp<int>((int)posX - 1, 0, ConfigManager::Settings().mapSizeX - 1);
 
 		if (Sigmoid(outputVals(1)) > 0.5)
-			posY = utils::Clamp<uint16_t>(posY + 1, 0, ConfigManager::Settings().mapSizeY - 1);
+			posY = utils::Clamp<int>((int)posY + 1, 0, ConfigManager::Settings().mapSizeY - 1);
 		else if (Sigmoid(outputVals(1)) < -0.5)
-			posY = utils::Clamp<uint16_t>(posY - 1, 0, ConfigManager::Settings().mapSizeY - 1);
+			posY = utils::Clamp<int>((int)posY - 1, 0, ConfigManager::Settings().mapSizeY - 1);
 
 		file.write(reinterpret_cast<char*>(&posX), sizeof(posX));
 		file.write(reinterpret_cast<char*>(&posY), sizeof(posY));
