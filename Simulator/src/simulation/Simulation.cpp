@@ -46,6 +46,9 @@ namespace evol
 
 		LOG_INFO("Starting the simulation...");
 
+		LOG_INFO("Initializing the map...");
+		MapData::Init(ConfigManager::Settings().outputPath);
+
 		LOG_INFO("Initializing {0} creatures...", ConfigManager::Settings().numCreatures);
 		int num = ConfigManager::Settings().numCreatures;
 		std::vector<std::shared_ptr<Creature>> creatures;
@@ -60,7 +63,6 @@ namespace evol
 		}
 
 		LOG_INFO("Spawning {0} food...", ConfigManager::Settings().numFood);
-		MapData::Init(ConfigManager::Settings().outputPath + "/mapdata");
 		for (int i = 0; i < ConfigManager::Settings().numFood; i++)
 		{
 			MapData::AddFood();
@@ -73,7 +75,7 @@ namespace evol
 		LOG_TRACE("Starting the main simulation loop...");
 		while (running)
 		{
-			if(MapData::CurrentCycle() % 10 == 0)
+			if(MapData::CurrentCycle() % 100 == 0)
 				LOG_TRACE("Cycle {0}", MapData::cycleNum);
 
 			MapData::SaveData();

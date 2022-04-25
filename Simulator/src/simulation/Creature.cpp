@@ -7,11 +7,14 @@
 namespace evol
 {
 	Creature::Creature(const std::string& outputPath, int globalIndex, int32_t startCycle, const Genome& genome, Color col, int16_t x, int16_t y)
-		: genome(genome), color(col), posX(x), posY(y), outputPath(outputPath)
+		: genome(genome), color(col), posX(x), posY(y), outputPath(outputPath), globalIndex(globalIndex)
 	{
-		file.open(outputPath + "/" + std::to_string(globalIndex), std::ios::binary);
-		file.write(reinterpret_cast<char*>(&startCycle), sizeof(startCycle));
-		file << col.R << col.G << col.B;
+		MapData::OccupyCell(posX, posY);
+
+		WriteData(startCycle);
+		WriteData(col.R);
+		WriteData(col.G);
+		WriteData(col.B);
 
 		inputToInternalConn = Eigen::MatrixXf::Zero(INTERNAL_NEURONS, INPUT_NEURONS);
 		inputToOutputConn = Eigen::MatrixXf::Zero(OUTPUT_NEURONS, INPUT_NEURONS);
@@ -96,36 +99,48 @@ namespace evol
 		if (minX == 0)
 			inputVals[3] = 0;
 		else
-			inputVals[3] = utils::Min(1.0f, 10.0f / minX);
+			inputVals[3] = (minX > 0) ? utils::Min(1.0f, 10.0f / minX) : utils::Max(-1.0f, 10.0f / minX);
 
 		if (minY == 0)
 			inputVals[4] = 0;
 		else
-			inputVals[4] = utils::Min(1.0f, 10.0f / minY);
+			inputVals[4] = (minY > 0) ? utils::Min(1.0f, 10.0f / minY) : utils::Max(-1.0f, 10.0f / minY);
 
 		internalVals = inputToInternalConn * inputVals + internalConn * internalVals;
 		outputVals = inputToOutputConn * inputVals + internalToOutputConn * internalVals;
 
 		if (Sigmoid(outputVals(0)) > 0.5)
-			posX = utils::Clamp<int>((int)posX + 1, 0, ConfigManager::Settings().mapSizeX - 1);
+			Move(+1, 0);
 		else if (Sigmoid(outputVals(0)) < -0.5)
-			posX = utils::Clamp<int>((int)posX - 1, 0, ConfigManager::Settings().mapSizeX - 1);
+			Move(-1, 0);
 
 		if (Sigmoid(outputVals(1)) > 0.5)
-			posY = utils::Clamp<int>((int)posY + 1, 0, ConfigManager::Settings().mapSizeY - 1);
+			Move(0, +1);
 		else if (Sigmoid(outputVals(1)) < -0.5)
-			posY = utils::Clamp<int>((int)posY - 1, 0, ConfigManager::Settings().mapSizeY - 1);
+			Move(0, -1);
 
-		file.write(reinterpret_cast<char*>(&posX), sizeof(posX));
-		file.write(reinterpret_cast<char*>(&posY), sizeof(posY));
+
+		WriteData(posX);
+		WriteData(posY);
 
 		age++;
 		health -= 1.0f;
 	}
 
-	void Creature::SaveOutput()
+	bool Creature::Move(int moveX, int moveY)
 	{
-		file.flush();
+		int16_t newX = utils::Clamp<int>((int)posX + moveX, 0, ConfigManager::Settings().mapSizeX - 1);
+		int16_t newY = utils::Clamp<int>((int)posY + moveY, 0, ConfigManager::Settings().mapSizeY - 1);
+
+		if (MapData::IsCellOccupied(newX, newY))
+			return false;
+
+		MapData::FreeCell(posX, posY);
+		posX = newX;
+		posY = newY;
+		MapData::OccupyCell(posX, posY);
+
+		return true;
 	}
 
 	bool Creature::IsDead()
@@ -150,7 +165,12 @@ namespace evol
 
 	Creature::~Creature()
 	{
-		file.flush();
+		MapData::FreeCell(posX, posY);
+
+		std::ofstream file(outputPath + "/" + std::to_string(globalIndex), std::ios::binary);
+
+		file.write(binaryData.data(), binaryData.size());
+
 		file.close();
 	}
 }

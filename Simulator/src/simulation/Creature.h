@@ -18,11 +18,11 @@ namespace evol
 	private:
 		Color color;
 		int16_t posX, posY;
+		int globalIndex;
 		float health = 100.0f;
 		uint32_t age = 0;
 
 		std::string outputPath;
-		std::ofstream file;
 
 		Eigen::Matrix<float, INTERNAL_NEURONS, INPUT_NEURONS> inputToInternalConn;
 		Eigen::Matrix<float, OUTPUT_NEURONS, INPUT_NEURONS> inputToOutputConn;
@@ -35,11 +35,21 @@ namespace evol
 
 		Genome genome;
 
+		std::vector<char> binaryData;
+
 		void ParseGenes();
 
 		inline float Sigmoid(float x)
 		{
 			return x / (1 + std::abs(x));
+		}
+
+		bool Move(int moveX, int moveY);
+		template<typename T>
+		void WriteData(T& data)
+		{
+			char* dataPtr = reinterpret_cast<char*>(&data);
+			binaryData.insert(binaryData.end(), dataPtr, dataPtr + sizeof(data));
 		}
 
 	public:
@@ -52,7 +62,6 @@ namespace evol
 
 		const Color& GetColor() const { return color; }
 		void SimulateCycle();
-		void SaveOutput();
 
 		bool IsDead();
 		int Age();

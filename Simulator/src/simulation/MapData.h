@@ -18,15 +18,27 @@ namespace evol
 	class MapData
 	{
 	private:
-		static std::ofstream file;
+		static std::ofstream foodFile;
+		static std::ofstream feromoneFile;
 
 	public:
 		static std::vector<std::shared_ptr<Coord<uint16_t>>> food;
+		static std::vector<bool> feromones;
+
+		static std::vector<uint16_t> occupation;
 		static int cycleNum;
 
-		static void Init(const std::string& outputFile)
+		static void Init(const std::string& outputDir)
 		{
-			file.open(outputFile, std::ios::binary);
+			foodFile.open(outputDir + "/food", std::ios::binary);
+			feromoneFile.open(outputDir + "/feromones", std::ios::binary);
+
+			feromones.resize(ConfigManager::Settings().mapSizeX * ConfigManager::Settings().mapSizeY);
+			std::fill(feromones.begin(), feromones.end(), false);
+
+			occupation.resize(ConfigManager::Settings().mapSizeX * ConfigManager::Settings().mapSizeY);
+			std::fill(occupation.begin(), occupation.end(), 0);
+
 			cycleNum = 0;
 		}
 
@@ -45,19 +57,49 @@ namespace evol
 			food.erase(food.begin() + index);
 		}
 
+		static void SetFeromone(int x, int y, bool value = true)
+		{
+			feromones[y * ConfigManager::Settings().mapSizeX + x] = value;
+		}
+
+		static bool GetFeromone(int x, int y)
+		{
+			return feromones[y * ConfigManager::Settings().mapSizeX + x];
+		}
+
+		static void OccupyCell(int x, int y)
+		{
+			occupation[y * ConfigManager::Settings().mapSizeX + x]++;
+		}
+
+		static void FreeCell(int x, int y)
+		{
+			if (occupation[y * ConfigManager::Settings().mapSizeX + x] > 0)
+				occupation[y * ConfigManager::Settings().mapSizeX + x]--;
+		}
+
+		static bool IsCellOccupied(int x, int y)
+		{
+			return occupation[y * ConfigManager::Settings().mapSizeX + x] > 0;
+		}
+
 		static void SaveData()
 		{
 			uint32_t numFood = (uint32_t)food.size();
 
-			file.write(reinterpret_cast<char*>(&numFood), sizeof(numFood));
+			foodFile.write(reinterpret_cast<char*>(&numFood), sizeof(numFood));
 
 			for (int i = 0; i < numFood; i++)
 			{
-				file.write(reinterpret_cast<char*>(&food[i]->x), sizeof(food[i]->x));
-				file.write(reinterpret_cast<char*>(&food[i]->y), sizeof(food[i]->y));
+				foodFile.write(reinterpret_cast<char*>(&food[i]->x), sizeof(food[i]->x));
+				foodFile.write(reinterpret_cast<char*>(&food[i]->y), sizeof(food[i]->y));
 			}
 
-			file.flush();
+			//utils::WriteBoolVecToFile(feromoneFile, feromones);
+
+
+
+			foodFile.flush();
 		}
 	};
 }

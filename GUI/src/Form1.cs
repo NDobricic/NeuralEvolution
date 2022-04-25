@@ -6,6 +6,7 @@ using System.IO;
 using System.Diagnostics;
 using System.IO.Pipes;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace GUI
 {
@@ -155,6 +156,8 @@ namespace GUI
 
             try
             {
+                CreatureData.Reset();
+
                 Console.WriteLine("Loading info file...");
                 byte[] infoArr = File.ReadAllBytes(Path.Combine(Config.SimPath, Config.OutputPath, "info"));
                 int numCycles = BitConverter.ToInt32(infoArr, 0);
@@ -164,18 +167,18 @@ namespace GUI
 
                 Console.Write("Loading food data...");
                 int lineStart = 0;
-                byte[] mapdata = File.ReadAllBytes(Path.Combine(Config.SimPath, Config.OutputPath, "mapdata"));
+                byte[] foodData = File.ReadAllBytes(Path.Combine(Config.SimPath, Config.OutputPath, "food"));
                 food = new List<Point<UInt16>>[numCycles];
 
                 for (int i = 0; i < numCycles; i++)
                 {
-                    Int32 numFood = BitConverter.ToInt32(mapdata, lineStart);
+                    Int32 numFood = BitConverter.ToInt32(foodData, lineStart);
 
                     food[i] = new List<Point<UInt16>>(numFood);
                     for (int j = 0; j < numFood; j++)
                     {
-                        UInt16 x = BitConverter.ToUInt16(mapdata, lineStart + 4 + j * 4);
-                        UInt16 y = BitConverter.ToUInt16(mapdata, lineStart + 4 + j * 4 + 2);
+                        UInt16 x = BitConverter.ToUInt16(foodData, lineStart + 4 + j * 4);
+                        UInt16 y = BitConverter.ToUInt16(foodData, lineStart + 4 + j * 4 + 2);
 
                         food[i].Add(new Point<UInt16>(x, y));
                     }
@@ -185,31 +188,25 @@ namespace GUI
 
                 Console.WriteLine("Loading creature data...");
 
-                //for (int i = 0; i < totalCreatures; i++)
-                //{
-                //    byte[] arr = File.ReadAllBytes(Path.Combine(Config.SimPath, "output", i.ToString()));
-
-                //    int startCycle = BitConverter.ToInt32(arr, 0);
-
-                //    var color = new SKColor(arr[4], arr[5], arr[6]);
-
-                //    for (int j = 0; 7 + j * 4 < arr.Length; j++)
-                //    {
-                //        UInt16 posX = BitConverter.ToUInt16(arr, 7 + j * 4);
-                //        UInt16 posY = BitConverter.ToUInt16(arr, 7 + j * 4 + 2);
-
-                //        //bitmaps[j].SetPixel(posX, posY, color);
-                //        bitmaps[startCycle + j].SetPixel(posX, posY, SKColors.Green);
-                //    }
-                //}
+                var watch = new Stopwatch();
+                watch.Start();
 
                 creatures = new CreatureData[totalCreatures];
-                for (int i = 0; i < totalCreatures; i++)
+                //for (int i = 0; i < totalCreatures; i++)
+                //{
+                //    var data = new CreatureData(Path.Combine(Config.SimPath, Config.OutputPath, i.ToString()));
+
+                //    creatures[i] = data;
+                //}
+
+                Parallel.For(0, totalCreatures, (i) =>
                 {
                     var data = new CreatureData(Path.Combine(Config.SimPath, Config.OutputPath, i.ToString()));
 
                     creatures[i] = data;
-                }
+                });
+
+                Console.WriteLine($"Loaded data for {totalCreatures} creatures in {(float)watch.ElapsedMilliseconds / 1000} seconds.");
 
                 UpdateFrame(0);
 
@@ -267,7 +264,7 @@ namespace GUI
 
         private void rewind100Btn_Click(object sender, EventArgs e)
         {
-            numericUpDown.Value = Math.Max(numericUpDown.Value - 100, numericUpDown.Minimum);
+            numericUpDown.Value = Math.Max(numericUpDown.Value - 1000, numericUpDown.Minimum);
         }
 
         private void prevFrameBtn_Click(object sender, EventArgs e)
@@ -282,7 +279,7 @@ namespace GUI
 
         private void skip100Btn_Click(object sender, EventArgs e)
         {
-            numericUpDown.Value = Math.Min(numericUpDown.Value + 100, numericUpDown.Maximum);
+            numericUpDown.Value = Math.Min(numericUpDown.Value + 1000, numericUpDown.Maximum);
         }
     }
 }

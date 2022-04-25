@@ -18,6 +18,11 @@ namespace GUI
         public int AliveCycles { get; private set; }
         public Point<UInt16>[] Position { get; private set; }
 
+        public static void Reset()
+        {
+            TotalCreatures = 0;
+        }
+
         public CreatureData(string inputFile)
         {
             byte[] data = File.ReadAllBytes(inputFile);
