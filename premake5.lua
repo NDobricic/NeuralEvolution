@@ -15,7 +15,17 @@ require "vendor/premake/modules/codeblocks"
 	}
 	
 outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
-	
+
+startproject "GUI"
+
+externalproject "GUI"
+   location "GUI"
+   uuid "0A04B0F6-5EBA-4278-88F3-41FF4932A5C1"
+   kind "WindowedApp"
+   language "C#"
+   dotnetframework "netstandard3.1"
+   dependson "Simulator"
+
 project "Simulator"
 	location "Simulator"
 	kind "ConsoleApp"
@@ -41,50 +51,6 @@ project "Simulator"
 	postbuildcommands
 	{
 		"{COPY} ../config.ini ../bin/%{outputdir}"
-	}
-	
-	filter "system:Windows"
-		systemversion "latest"
-		
-	filter "configurations:Debug"
-		defines { "DEBUG" }
-		symbols "On"
-		
-	filter "configurations:Release"
-		defines { "NDEBUG" }
-		optimize "On"
-		
-project "GUI"
-	location "GUI"
-	kind "WindowedApp"
-	language "C#"
-	dotnetframework "4.8"
-	
-	targetdir ("bin/" .. outputdir .. "/%{prj.name}")
-	objdir ("bin-int/" .. outputdir .. "/%{prj.name}")
-	
-	files
-	{
-		"%{prj.name}/src/**",
-		"%{prj.name}/res/**"
-	}
-	
-	links
-	{
-		"System",
-		"System.Drawing",
-		"System.Windows",
-		"System.Windows.Forms",
-		"System.ComponentModel"
-	}
-	
-	nuget
-	{
-		"SkiaSharp:2.80.3",
-		"SkiaSharp.Views.Desktop.Common:2.80.3",
-		"OpenTK:3.1.0",
-		"OpenTK.GLControl:3.1.0",
-		"SkiaSharp.Views.WindowsForms:2.80.3"
 	}
 	
 	filter "system:Windows"

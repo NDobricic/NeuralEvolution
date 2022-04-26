@@ -1,0 +1,5 @@
+﻿<Project>
+ <PropertyGroup>
+   <MSBUildProjectExtensionsPath>..\bin-int\gui</MSBUildProjectExtensionsPath>
+ </PropertyGroup>
+</Project>
