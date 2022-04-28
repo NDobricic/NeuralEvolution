@@ -22,8 +22,10 @@ namespace GUI
 
         bool animPlaying = false;
 
-        const float MAX_ZOOM = 64;
-        float zoom = 1;
+        const float MAX_ZOOM = 20;
+        float zoom = 0;
+
+        List<Control> uiControls = new List<Control>();
 
         public MainWindow()
         {
@@ -31,13 +33,33 @@ namespace GUI
 
             glControl.MouseWheel += GlControl_MouseWheel;
             numericUpDown.Controls[0].Visible = false;
+
+            uiControls.Add(startBtn);
+            uiControls.Add(stopBtn);
+            uiControls.Add(numericUpDown);
+            uiControls.Add(rewind100Btn);
+            uiControls.Add(prevFrameBtn);
+            uiControls.Add(playBtn);
+            uiControls.Add(nextFrameBtn);
+            uiControls.Add(skip100Btn);
+            uiControls.Add(colorChkBox);
+            uiControls.Add(statsBtn);
+
+            SetControlsEnabled(false);
+            startBtn.Enabled = true;
+        }
+
+        private void SetControlsEnabled(bool enabled)
+        {
+            foreach (var control in uiControls)
+                control.Enabled = enabled;
         }
 
         private void GlControl_MouseWheel(object sender, MouseEventArgs e)
         {
             zoom += (float)e.Delta / SystemInformation.MouseWheelScrollDelta;
 
-            zoom = Math.Clamp(zoom, 1, MAX_ZOOM);
+            zoom = Math.Clamp(zoom, 0, MAX_ZOOM - 1);
 
             glControl.Refresh();
         }
@@ -94,9 +116,8 @@ namespace GUI
                 pipeWriter.Write("success\0");
                 pipeWriter.Flush();
 
-                startBtn.Enabled = false;
+                SetControlsEnabled(false);
                 stopBtn.Enabled = true;
-                numericUpDown.Enabled = false;
             }
             catch (Exception ex)
             {
@@ -121,9 +142,8 @@ namespace GUI
 
                 simProcess.WaitForExit();
 
-                startBtn.Enabled = true;
+                SetControlsEnabled(true);
                 stopBtn.Enabled = false;
-                numericUpDown.Enabled = true;
 
                 currentFrame = new SKBitmap(Config.MapSizeX, Config.MapSizeY);
 
@@ -134,6 +154,9 @@ namespace GUI
                 string msg = $"Couldn't send the stop signal to child process. Is the simulation closed?";
                 MessageBox.Show(msg, "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 Console.WriteLine($"Couldn't send the stop signal to child process: {ex.Message}");
+
+                SetControlsEnabled(false);
+                startBtn.Enabled = true;
             }
             finally
             {
@@ -256,8 +279,17 @@ namespace GUI
 
             e.Surface.Canvas.Clear(SKColors.White);
 
-            int minSize = Math.Min(glControl.Width, glControl.Height);
-            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(0, 0, minSize * zoom, minSize * zoom));
+            float width = ((float)glControl.Width / Config.MapSizeX * Config.MapSizeY > glControl.Height) ?
+                (float)glControl.Height / Config.MapSizeY * Config.MapSizeX : glControl.Width;
+
+            float height = width / Config.MapSizeX * Config.MapSizeY;
+
+            int border = 3;
+            e.Surface.Canvas.DrawRect(0, 0, width, height, new SKPaint());
+            //e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(border, border, width / (1.0f - zoom / MAX_ZOOM) - border,
+            //                                                                     height / (1.0f - zoom / MAX_ZOOM) - border));
+            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(border, border, width - border,
+                                                                                 height - border));
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -309,7 +341,7 @@ namespace GUI
             glControl.Refresh();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void statsBtn_Click(object sender, EventArgs e)
         {
             var statsForm = new StatsWindow(Path.Combine(Config.SimPath, Config.OutputPath, "stats"));
             statsForm.Show();

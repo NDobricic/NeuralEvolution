@@ -33,6 +33,7 @@ namespace GUI
             this.glControl = new SkiaSharp.Views.Desktop.SKGLControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.statsBtn = new System.Windows.Forms.Button();
             this.colorChkBox = new System.Windows.Forms.CheckBox();
             this.skip100Btn = new System.Windows.Forms.Button();
             this.nextFrameBtn = new System.Windows.Forms.Button();
@@ -43,7 +44,6 @@ namespace GUI
             this.stopBtn = new System.Windows.Forms.Button();
             this.startBtn = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
@@ -53,10 +53,10 @@ namespace GUI
             // 
             this.glControl.BackColor = System.Drawing.Color.Black;
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(209, 3);
-            this.glControl.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
+            this.glControl.Location = new System.Drawing.Point(208, 4);
+            this.glControl.Margin = new System.Windows.Forms.Padding(4);
             this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(958, 952);
+            this.glControl.Size = new System.Drawing.Size(772, 772);
             this.glControl.TabIndex = 0;
             this.glControl.VSync = false;
             // 
@@ -75,12 +75,12 @@ namespace GUI
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 348F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1172, 958);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(984, 780);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.statsBtn);
             this.panel1.Controls.Add(this.colorChkBox);
             this.panel1.Controls.Add(this.skip100Btn);
             this.panel1.Controls.Add(this.nextFrameBtn);
@@ -94,8 +94,18 @@ namespace GUI
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(204, 958);
+            this.panel1.Size = new System.Drawing.Size(204, 780);
             this.panel1.TabIndex = 1;
+            // 
+            // statsBtn
+            // 
+            this.statsBtn.Location = new System.Drawing.Point(4, 186);
+            this.statsBtn.Name = "statsBtn";
+            this.statsBtn.Size = new System.Drawing.Size(195, 39);
+            this.statsBtn.TabIndex = 10;
+            this.statsBtn.Text = "POPULATION STATISTICS";
+            this.statsBtn.UseVisualStyleBackColor = true;
+            this.statsBtn.Click += new System.EventHandler(this.statsBtn_Click);
             // 
             // colorChkBox
             // 
@@ -214,25 +224,15 @@ namespace GUI
             this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // button1
-            // 
-            this.button1.Location = new System.Drawing.Point(6, 186);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(88, 45);
-            this.button1.TabIndex = 10;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
-            this.button1.Click += new System.EventHandler(this.button1_Click);
-            // 
             // MainWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1172, 958);
+            this.ClientSize = new System.Drawing.Size(984, 780);
             this.Controls.Add(this.tableLayoutPanel1);
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.Name = "MainWindow";
-            this.Text = "Form1";
+            this.Text = "Neural Evolution";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
@@ -257,7 +257,7 @@ namespace GUI
         private System.Windows.Forms.Button prevFrameBtn;
         private System.Windows.Forms.Button rewind100Btn;
         private System.Windows.Forms.CheckBox colorChkBox;
-        private System.Windows.Forms.Button button1;
+        private System.Windows.Forms.Button statsBtn;
     }
 }
 

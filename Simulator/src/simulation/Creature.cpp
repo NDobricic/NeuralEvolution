@@ -84,9 +84,6 @@ namespace evol
 				minX = diffX;
 				minY = diffY;
 				closestFoodIndex = i;
-
-				MapData::food[i]->x - posX;
-				MapData::food[i]->y - posY;
 			}
 		}
 

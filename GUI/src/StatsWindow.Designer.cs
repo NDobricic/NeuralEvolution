@@ -42,20 +42,23 @@ namespace GUI
             SonicPlot.Core.AxisStyle axisStyle2 = new SonicPlot.Core.AxisStyle();
             SonicPlot.Core.TickCollection tickCollection2 = new SonicPlot.Core.TickCollection();
             this.formsPlot1 = new SonicPlot.WinForms.Skia.FormsPlot();
+            this.titleLbl = new System.Windows.Forms.Label();
             this.SuspendLayout();
             // 
             // formsPlot1
             // 
-            this.formsPlot1.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.formsPlot1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             margin1.Bottom = 30;
             margin1.Left = 50;
             margin1.Right = 10;
             margin1.Top = 10;
             plotLayout1.Padding = margin1;
             this.formsPlot1.Layout = plotLayout1;
-            this.formsPlot1.Location = new System.Drawing.Point(0, 0);
+            this.formsPlot1.Location = new System.Drawing.Point(0, 31);
             this.formsPlot1.Name = "formsPlot1";
-            this.formsPlot1.Size = new System.Drawing.Size(584, 362);
+            this.formsPlot1.Size = new System.Drawing.Size(584, 331);
             this.formsPlot1.Style = plotStyle1;
             this.formsPlot1.TabIndex = 0;
             axisBounds1.AbsoluteMaximum = double.PositiveInfinity;
@@ -89,21 +92,36 @@ namespace GUI
             axis2.Ticks = tickCollection2;
             this.formsPlot1.YAxis = axis2;
             // 
+            // titleLbl
+            // 
+            this.titleLbl.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.titleLbl.AutoSize = true;
+            this.titleLbl.Font = new System.Drawing.Font("Segoe UI", 12F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.titleLbl.Location = new System.Drawing.Point(12, 7);
+            this.titleLbl.Name = "titleLbl";
+            this.titleLbl.Size = new System.Drawing.Size(237, 21);
+            this.titleLbl.TabIndex = 1;
+            this.titleLbl.Text = "POPULATION SIZE OVER TIME";
+            // 
             // StatsWindow
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(584, 362);
+            this.Controls.Add(this.titleLbl);
             this.Controls.Add(this.formsPlot1);
             this.MinimumSize = new System.Drawing.Size(200, 100);
             this.Name = "StatsWindow";
-            this.Text = "StatsWindow";
+            this.Text = "Statistics";
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
         #endregion
 
         private SonicPlot.WinForms.Skia.FormsPlot formsPlot1;
+        private System.Windows.Forms.Label titleLbl;
     }
 }

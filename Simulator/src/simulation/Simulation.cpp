@@ -109,7 +109,7 @@ namespace evol
 
 			if (MapData::CurrentCycle() % 1 == 0)
 			{
-				for(int i = 0; i < 5; i++)
+				for(int i = 0; i < 1; i++)
 					MapData::AddFood();
 			}
 
