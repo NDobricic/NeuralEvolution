@@ -152,7 +152,7 @@ namespace evol
 	{
 		Genome genome = Genome::Combine(a.genome, b.genome,
 			ConfigManager::Settings().dotMutationChance, ConfigManager::Settings().numericAberrationChance);
-		Color color = Color::Combine(a.color, b.color);
+		Color color = Random::ChooseRandom(a.color, b.color);
 
 		auto result = std::make_shared<Creature>(a.outputPath, globalIndex, MapData::CurrentCycle(), genome, color);
 		return result;

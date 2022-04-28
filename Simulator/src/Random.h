@@ -23,4 +23,14 @@ public:
 		std::uniform_real_distribution<T> dist(min, max);
 		return dist(engine);
 	}
+
+	template<typename T>
+	static T& ChooseRandom(T& first, T& second)
+	{
+		std::uniform_int_distribution<int> dist(0, 1);
+
+		if (dist(engine) == 0)
+			return first;
+		return second;
+	}
 };
