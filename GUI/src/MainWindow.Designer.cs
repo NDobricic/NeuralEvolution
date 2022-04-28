@@ -1,7 +1,7 @@
 ﻿
 namespace GUI
 {
-    partial class Form1
+    partial class MainWindow
     {
         /// <summary>
         ///  Required designer variable.
@@ -33,6 +33,7 @@ namespace GUI
             this.glControl = new SkiaSharp.Views.Desktop.SKGLControl();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.colorChkBox = new System.Windows.Forms.CheckBox();
             this.skip100Btn = new System.Windows.Forms.Button();
             this.nextFrameBtn = new System.Windows.Forms.Button();
             this.prevFrameBtn = new System.Windows.Forms.Button();
@@ -42,6 +43,7 @@ namespace GUI
             this.stopBtn = new System.Windows.Forms.Button();
             this.startBtn = new System.Windows.Forms.Button();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.button1 = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).BeginInit();
@@ -51,9 +53,10 @@ namespace GUI
             // 
             this.glControl.BackColor = System.Drawing.Color.Black;
             this.glControl.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.glControl.Location = new System.Drawing.Point(178, 3);
+            this.glControl.Location = new System.Drawing.Point(209, 3);
+            this.glControl.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.glControl.Name = "glControl";
-            this.glControl.Size = new System.Drawing.Size(824, 824);
+            this.glControl.Size = new System.Drawing.Size(958, 952);
             this.glControl.TabIndex = 0;
             this.glControl.VSync = false;
             // 
@@ -63,19 +66,22 @@ namespace GUI
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 2;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Absolute, 204F));
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.Controls.Add(this.panel1, 0, 0);
             this.tableLayoutPanel1.Controls.Add(this.glControl, 1, 0);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(0, 0);
+            this.tableLayoutPanel1.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 1;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 302F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1005, 830);
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 348F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1172, 958);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.button1);
+            this.panel1.Controls.Add(this.colorChkBox);
             this.panel1.Controls.Add(this.skip100Btn);
             this.panel1.Controls.Add(this.nextFrameBtn);
             this.panel1.Controls.Add(this.prevFrameBtn);
@@ -88,15 +94,29 @@ namespace GUI
             this.panel1.Location = new System.Drawing.Point(0, 0);
             this.panel1.Margin = new System.Windows.Forms.Padding(0);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(175, 830);
+            this.panel1.Size = new System.Drawing.Size(204, 958);
             this.panel1.TabIndex = 1;
+            // 
+            // colorChkBox
+            // 
+            this.colorChkBox.AutoSize = true;
+            this.colorChkBox.Checked = true;
+            this.colorChkBox.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.colorChkBox.Location = new System.Drawing.Point(6, 161);
+            this.colorChkBox.Name = "colorChkBox";
+            this.colorChkBox.Size = new System.Drawing.Size(109, 19);
+            this.colorChkBox.TabIndex = 9;
+            this.colorChkBox.Text = "SHOW COLORS";
+            this.colorChkBox.UseVisualStyleBackColor = true;
+            this.colorChkBox.CheckedChanged += new System.EventHandler(this.colorChkBox_CheckedChanged);
             // 
             // skip100Btn
             // 
-            this.skip100Btn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.skip100Btn.Location = new System.Drawing.Point(135, 109);
+            this.skip100Btn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.skip100Btn.Location = new System.Drawing.Point(158, 126);
+            this.skip100Btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.skip100Btn.Name = "skip100Btn";
-            this.skip100Btn.Size = new System.Drawing.Size(35, 25);
+            this.skip100Btn.Size = new System.Drawing.Size(41, 29);
             this.skip100Btn.TabIndex = 8;
             this.skip100Btn.Text = ">>";
             this.skip100Btn.UseVisualStyleBackColor = true;
@@ -104,10 +124,11 @@ namespace GUI
             // 
             // nextFrameBtn
             // 
-            this.nextFrameBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.nextFrameBtn.Location = new System.Drawing.Point(110, 109);
+            this.nextFrameBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.nextFrameBtn.Location = new System.Drawing.Point(128, 126);
+            this.nextFrameBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.nextFrameBtn.Name = "nextFrameBtn";
-            this.nextFrameBtn.Size = new System.Drawing.Size(25, 25);
+            this.nextFrameBtn.Size = new System.Drawing.Size(29, 29);
             this.nextFrameBtn.TabIndex = 7;
             this.nextFrameBtn.Text = ">";
             this.nextFrameBtn.UseVisualStyleBackColor = true;
@@ -115,10 +136,11 @@ namespace GUI
             // 
             // prevFrameBtn
             // 
-            this.prevFrameBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.prevFrameBtn.Location = new System.Drawing.Point(40, 109);
+            this.prevFrameBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.prevFrameBtn.Location = new System.Drawing.Point(47, 126);
+            this.prevFrameBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.prevFrameBtn.Name = "prevFrameBtn";
-            this.prevFrameBtn.Size = new System.Drawing.Size(25, 25);
+            this.prevFrameBtn.Size = new System.Drawing.Size(29, 29);
             this.prevFrameBtn.TabIndex = 6;
             this.prevFrameBtn.Text = "<";
             this.prevFrameBtn.UseVisualStyleBackColor = true;
@@ -126,10 +148,11 @@ namespace GUI
             // 
             // rewind100Btn
             // 
-            this.rewind100Btn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.rewind100Btn.Location = new System.Drawing.Point(5, 109);
+            this.rewind100Btn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.rewind100Btn.Location = new System.Drawing.Point(6, 126);
+            this.rewind100Btn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.rewind100Btn.Name = "rewind100Btn";
-            this.rewind100Btn.Size = new System.Drawing.Size(35, 25);
+            this.rewind100Btn.Size = new System.Drawing.Size(41, 29);
             this.rewind100Btn.TabIndex = 5;
             this.rewind100Btn.Text = "<<";
             this.rewind100Btn.UseVisualStyleBackColor = true;
@@ -137,10 +160,11 @@ namespace GUI
             // 
             // playBtn
             // 
-            this.playBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.playBtn.Location = new System.Drawing.Point(65, 109);
+            this.playBtn.Font = new System.Drawing.Font("Segoe UI", 8.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
+            this.playBtn.Location = new System.Drawing.Point(76, 126);
+            this.playBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.playBtn.Name = "playBtn";
-            this.playBtn.Size = new System.Drawing.Size(45, 25);
+            this.playBtn.Size = new System.Drawing.Size(52, 29);
             this.playBtn.TabIndex = 4;
             this.playBtn.Text = "▶";
             this.playBtn.UseVisualStyleBackColor = true;
@@ -149,23 +173,25 @@ namespace GUI
             // numericUpDown
             // 
             this.numericUpDown.Enabled = false;
-            this.numericUpDown.Location = new System.Drawing.Point(5, 83);
+            this.numericUpDown.Location = new System.Drawing.Point(6, 96);
+            this.numericUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.numericUpDown.Maximum = new decimal(new int[] {
             0,
             0,
             0,
             0});
             this.numericUpDown.Name = "numericUpDown";
-            this.numericUpDown.Size = new System.Drawing.Size(165, 20);
+            this.numericUpDown.Size = new System.Drawing.Size(192, 23);
             this.numericUpDown.TabIndex = 3;
             this.numericUpDown.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
             // 
             // stopBtn
             // 
             this.stopBtn.Enabled = false;
-            this.stopBtn.Location = new System.Drawing.Point(3, 43);
+            this.stopBtn.Location = new System.Drawing.Point(4, 50);
+            this.stopBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.stopBtn.Name = "stopBtn";
-            this.stopBtn.Size = new System.Drawing.Size(167, 34);
+            this.stopBtn.Size = new System.Drawing.Size(195, 39);
             this.stopBtn.TabIndex = 2;
             this.stopBtn.Text = "STOP SIMULATION";
             this.stopBtn.UseVisualStyleBackColor = true;
@@ -173,9 +199,10 @@ namespace GUI
             // 
             // startBtn
             // 
-            this.startBtn.Location = new System.Drawing.Point(3, 3);
+            this.startBtn.Location = new System.Drawing.Point(4, 3);
+            this.startBtn.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.startBtn.Name = "startBtn";
-            this.startBtn.Size = new System.Drawing.Size(167, 34);
+            this.startBtn.Size = new System.Drawing.Size(195, 39);
             this.startBtn.TabIndex = 1;
             this.startBtn.Text = "START SIMULATION";
             this.startBtn.UseVisualStyleBackColor = true;
@@ -187,17 +214,29 @@ namespace GUI
             this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
-            // Form1
+            // button1
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.button1.Location = new System.Drawing.Point(6, 186);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(88, 45);
+            this.button1.TabIndex = 10;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
+            // MainWindow
+            // 
+            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1005, 830);
+            this.ClientSize = new System.Drawing.Size(1172, 958);
             this.Controls.Add(this.tableLayoutPanel1);
-            this.Name = "Form1";
+            this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.Name = "MainWindow";
             this.Text = "Form1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDown)).EndInit();
             this.ResumeLayout(false);
 
@@ -217,6 +256,8 @@ namespace GUI
         private System.Windows.Forms.Button nextFrameBtn;
         private System.Windows.Forms.Button prevFrameBtn;
         private System.Windows.Forms.Button rewind100Btn;
+        private System.Windows.Forms.CheckBox colorChkBox;
+        private System.Windows.Forms.Button button1;
     }
 }
 

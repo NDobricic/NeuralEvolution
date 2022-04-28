@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace GUI
 {
-    public partial class Form1 : Form
+    public partial class MainWindow : Form
     {
         Process simProcess;
         NamedPipeServerStream namedPipeServer;
@@ -22,11 +22,24 @@ namespace GUI
 
         bool animPlaying = false;
 
-        public Form1()
+        const float MAX_ZOOM = 64;
+        float zoom = 1;
+
+        public MainWindow()
         {
             InitializeComponent();
 
+            glControl.MouseWheel += GlControl_MouseWheel;
             numericUpDown.Controls[0].Visible = false;
+        }
+
+        private void GlControl_MouseWheel(object sender, MouseEventArgs e)
+        {
+            zoom += (float)e.Delta / SystemInformation.MouseWheelScrollDelta;
+
+            zoom = Math.Clamp(zoom, 1, MAX_ZOOM);
+
+            glControl.Refresh();
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -89,7 +102,7 @@ namespace GUI
             {
                 string msg = $"An error has occured while trying to start the simulation process";
                 MessageBox.Show(msg, "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                Console.WriteLine(msg + ": { ex.Message}");
+                Console.WriteLine(msg + $": { ex.Message}");
             }
         }
 
@@ -128,9 +141,15 @@ namespace GUI
             }
         }
 
+        private void UpdateFrame()
+        {
+            UpdateFrame((int)numericUpDown.Value);
+        }
+
         private void UpdateFrame(int index)
         {
-            currentFrame.Erase(SKColors.White);
+            SKColor backColor = colorChkBox.Checked ? SKColors.White : SKColors.Black;
+            currentFrame.Erase(backColor);
 
             foreach(var coord in food[index])
             {
@@ -145,7 +164,9 @@ namespace GUI
                     int x = creatures[i].Position[posIndex].X;
                     int y = creatures[i].Position[posIndex].Y;
 
-                    currentFrame.SetPixel(x, y, SKColors.Green);
+                    SKColor color = colorChkBox.Checked ? creatures[i].Color : SKColors.White;
+
+                    currentFrame.SetPixel(x, y, color);
                 }
             }
         }
@@ -233,11 +254,10 @@ namespace GUI
             //int index = (int)numericUpDown.Value;
             //var bitmap = bitmaps[index];
 
-            float zoom = 4.0f;
             e.Surface.Canvas.Clear(SKColors.White);
 
             int minSize = Math.Min(glControl.Width, glControl.Height);
-            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(0, 0, minSize, minSize));
+            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(0, 0, minSize * zoom, minSize * zoom));
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
@@ -280,6 +300,19 @@ namespace GUI
         private void skip100Btn_Click(object sender, EventArgs e)
         {
             numericUpDown.Value = Math.Min(numericUpDown.Value + 1000, numericUpDown.Maximum);
+        }
+
+        private void colorChkBox_CheckedChanged(object sender, EventArgs e)
+        {
+            UpdateFrame();
+
+            glControl.Refresh();
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var statsForm = new StatsWindow(Path.Combine(Config.SimPath, Config.OutputPath, "stats"));
+            statsForm.Show();
         }
     }
 }
