@@ -72,6 +72,9 @@ namespace evol
 		int totalCreatures = creatures.size();
 		bool running = true;
 
+		LOG_TRACE("Creating the statistics output file...");
+		std::ofstream stats(ConfigManager::Settings().outputPath + "/stats", std::ios_base::binary);
+
 		LOG_TRACE("Starting the main simulation loop...");
 		while (running)
 		{
@@ -106,17 +109,24 @@ namespace evol
 
 			if (MapData::CurrentCycle() % 1 == 0)
 			{
-				for(int i = 0; i < 1; i++)
+				for(int i = 0; i < 5; i++)
 					MapData::AddFood();
 			}
 
+			MapData::cycleNum++;
+
+			uint32_t numCreatures = (uint32_t)creatures.size();
+			stats.write(reinterpret_cast<char*>(&numCreatures), sizeof(numCreatures));
+			stats.flush();
+
+
 			if (strcmp(utils::ReadFromPipe(fileHandle, false), "stop") == 0)
 				running = false;
-
-			MapData::cycleNum++;
 		}
 
-		std::ofstream file(ConfigManager::Settings().outputPath + "/info");
+		stats.flush();
+
+		std::ofstream file(ConfigManager::Settings().outputPath + "/info", std::ios_base::binary);
 		int cycleNum = MapData::CurrentCycle();
 		file.write(reinterpret_cast<char*>(&cycleNum), sizeof(cycleNum));
 		file.write(reinterpret_cast<char*>(&totalCreatures), sizeof(totalCreatures));
