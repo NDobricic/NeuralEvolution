@@ -2,54 +2,81 @@
 
 #include "../Core.h"
 #include "../Configuration.h"
+#include "Creature.h"
 #include <fstream>
+#include "MapObject.h"
+#include "Food.h"
 
 namespace evol
 {
-	template<typename T>
-	struct Coord
+	enum class ObjectType
 	{
-		T x, y;
-
-		Coord() : x(0), y(0) { }
-		Coord(T x, T y) : x(x), y(y) { }
+		FOOD,
+		CREATURE,
+		OBSTACLE
 	};
 
 	class MapData
 	{
 	private:
+		static uint16_t sizeX, sizeY;
+
 		static std::ofstream foodFile;
 		static std::ofstream feromoneFile;
+		static std::vector<std::shared_ptr<MapObject>> objects;
 
 	public:
-		static std::vector<std::shared_ptr<Coord<uint16_t>>> food;
+		static std::vector<std::shared_ptr<Creature>> creatures;
+		static std::vector<std::shared_ptr<Food>> food;
 		static std::vector<bool> feromones;
 
-		static std::vector<uint16_t> occupation;
 		static int cycleNum;
 
-		static void Init(const std::string& outputDir)
+		static void Init(uint16_t mapSizeX, uint16_t mapSizeY, int numCreatures, int numFood, const std::string& outputDir)
 		{
+			sizeX = mapSizeX;
+			sizeY = mapSizeY;
+
 			foodFile.open(outputDir + "/food", std::ios::binary);
 			feromoneFile.open(outputDir + "/feromones", std::ios::binary);
 
-			feromones.resize(ConfigManager::Settings().mapSizeX * ConfigManager::Settings().mapSizeY);
+			objects.resize(sizeX * sizeY);
+			std::fill(objects.begin(), objects.end(), std::shared_ptr<MapObject>(nullptr));
+
+			feromones.resize(sizeX * sizeY);
 			std::fill(feromones.begin(), feromones.end(), false);
 
-			occupation.resize(ConfigManager::Settings().mapSizeX * ConfigManager::Settings().mapSizeY);
-			std::fill(occupation.begin(), occupation.end(), 0);
+			LOG_INFO("Initializing {0} creatures...", numCreatures);
+			for (int i = 0; i < numCreatures; i++)
+			{
+				std::shared_ptr<Creature> a
+					= std::make_shared<Creature>(outputDir, i, 0);
+
+				AddCreature(a);
+			}
+
+			LOG_INFO("Spawning {0} food...", numFood);
+			for (int i = 0; i < numFood; i++)
+			{
+				AddFood();
+			}
 
 			cycleNum = 0;
+		}
+
+		static std::shared_ptr<MapObject> GetObjAt(int x, int y)
+		{
+			return objects[y * sizeX + x];
 		}
 
 		static int CurrentCycle() { return cycleNum; }
 
 		static void AddFood()
 		{
-			uint16_t x = Random::Next<uint16_t>(0u, ConfigManager::Settings().mapSizeX - 1);
-			uint16_t y = Random::Next<uint16_t>(0u, ConfigManager::Settings().mapSizeY - 1);
+			uint16_t x = Random::Next<uint16_t>(0u, sizeX - 1);
+			uint16_t y = Random::Next<uint16_t>(0u, sizeY - 1);
 
-			food.push_back(std::make_shared<Coord<uint16_t>>(x, y));
+			food.push_back(std::make_shared<Food>(x, y));
 		}
 
 		static void RemoveFood(int index)
@@ -59,28 +86,55 @@ namespace evol
 
 		static void SetFeromone(int x, int y, bool value = true)
 		{
-			feromones[y * ConfigManager::Settings().mapSizeX + x] = value;
+			feromones[y * sizeX + x] = value;
 		}
 
 		static bool GetFeromone(int x, int y)
 		{
-			return feromones[y * ConfigManager::Settings().mapSizeX + x];
+			return feromones[y * sizeX + x];
 		}
 
-		static void OccupyCell(int x, int y)
+		static void MoveObjectTo(const MapObject* obj, int x, int y)
 		{
-			occupation[y * ConfigManager::Settings().mapSizeX + x]++;
+			auto pos = obj->GetPosition();
+			auto objPtr = GetObjAt(pos.x, pos.y);
+
+			objects[y * sizeX + x] = objPtr;
+			objects[pos.y * sizeX + pos.x] = std::shared_ptr<MapObject>(nullptr);
 		}
 
-		static void FreeCell(int x, int y)
+		static void DeleteObjAt(int x, int y)
 		{
-			if (occupation[y * ConfigManager::Settings().mapSizeX + x] > 0)
-				occupation[y * ConfigManager::Settings().mapSizeX + x]--;
+			objects[y * sizeX + x] = std::shared_ptr<MapObject>(nullptr);
+		}
+
+		static void RemoveObj(const MapObject* obj)
+		{
+			auto pos = obj->GetPosition();
+
+			objects[pos.y * sizeX + pos.x] = std::shared_ptr<MapObject>(nullptr);
+		}
+
+		static void AddCreature(std::shared_ptr<Creature> creature)
+		{
+			auto pos = creature->GetPosition();
+			
+			objects[pos.y * sizeX + pos.x] = creature;
+			creatures.push_back(creature);
+		}
+
+		static void RemoveCreature(int index)
+		{
+			auto pos = creatures[index]->GetPosition();
+
+			creatures.erase(MapData::creatures.begin() + index);
+			objects[pos.y * sizeX + pos.x] = std::shared_ptr<MapObject>(nullptr);
 		}
 
 		static bool IsCellOccupied(int x, int y)
 		{
-			return occupation[y * ConfigManager::Settings().mapSizeX + x] > 0;
+			bool isFree = (GetObjAt(x, y) == nullptr);
+			return !isFree;
 		}
 
 		static void SaveData()
@@ -91,8 +145,9 @@ namespace evol
 
 			for (int i = 0; i < numFood; i++)
 			{
-				foodFile.write(reinterpret_cast<char*>(&food[i]->x), sizeof(food[i]->x));
-				foodFile.write(reinterpret_cast<char*>(&food[i]->y), sizeof(food[i]->y));
+				auto pos = food[i]->GetPosition();
+				foodFile.write(reinterpret_cast<char*>(&pos.x), sizeof(pos.x));
+				foodFile.write(reinterpret_cast<char*>(&pos.y), sizeof(pos.y));
 			}
 
 			//utils::WriteBoolVecToFile(feromoneFile, feromones);

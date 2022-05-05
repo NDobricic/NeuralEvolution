@@ -2,12 +2,16 @@
 
 namespace evol
 {
-	std::vector<std::shared_ptr<Coord<uint16_t>>> MapData::food;
+	uint16_t MapData::sizeX;
+	uint16_t MapData::sizeY;
+
+	std::vector<std::shared_ptr<Creature>> MapData::creatures;
+	std::vector<std::shared_ptr<Food>> MapData::food;
 	std::vector<bool> MapData::feromones;
-	std::vector<uint16_t> MapData::occupation;
 
 	std::ofstream MapData::foodFile;
 	std::ofstream MapData::feromoneFile;
+	std::vector<std::shared_ptr<MapObject>> MapData::objects;
 
 	int MapData::cycleNum;
 }

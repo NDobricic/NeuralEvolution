@@ -10,10 +10,11 @@
 #include <Core>
 #include "Genome.h"
 #include "../Configuration.h"
+#include "MapObject.h"
 
 namespace evol
 {
-	class Creature
+	class Creature : public MapObject
 	{
 	private:
 		Color color;
@@ -60,12 +61,18 @@ namespace evol
 
 		~Creature();
 
-		const Color& GetColor() const { return color; }
 		void SimulateCycle();
 
+		MapObject* GetClosestObjOnAxis(int dx, int dy);
+		float CalculateProximity(int x, int y);
 		bool IsDead();
 		int Age();
 
 		static std::shared_ptr<Creature> Combine(const Creature& a, const Creature& b, int globalIndex);
+
+		virtual Color GetColor() const override { return color; }
+		virtual bool IsObstacle() const override { return true; }
+
+		virtual Coord<uint16_t> GetPosition() const override;
 	};
 }

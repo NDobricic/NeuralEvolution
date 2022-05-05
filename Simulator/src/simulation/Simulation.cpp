@@ -47,29 +47,10 @@ namespace evol
 		LOG_INFO("Starting the simulation...");
 
 		LOG_INFO("Initializing the map...");
-		MapData::Init(ConfigManager::Settings().outputPath);
+		MapData::Init(ConfigManager::Settings().mapSizeX, ConfigManager::Settings().mapSizeY,
+			ConfigManager::Settings().numCreatures, ConfigManager::Settings().numFood, ConfigManager::Settings().outputPath);
 
-		LOG_INFO("Initializing {0} creatures...", ConfigManager::Settings().numCreatures);
-		int num = ConfigManager::Settings().numCreatures;
-		std::vector<std::shared_ptr<Creature>> creatures;
-		creatures.reserve(num);
-
-		for (int i = 0; i < num; i++)
-		{
-			std::shared_ptr<Creature> a
-				= std::make_shared<Creature>(ConfigManager::Settings().outputPath, i, 0);
-
-			creatures.push_back(a);
-		}
-
-		LOG_INFO("Spawning {0} food...", ConfigManager::Settings().numFood);
-		for (int i = 0; i < ConfigManager::Settings().numFood; i++)
-		{
-			MapData::AddFood();
-		}
-
-
-		int totalCreatures = creatures.size();
+		int totalCreatures = MapData::creatures.size();
 		bool running = true;
 
 		LOG_TRACE("Creating the statistics output file...");
@@ -83,27 +64,29 @@ namespace evol
 
 			MapData::SaveData();
 
-			for (int i = 0; i < creatures.size(); i++)
+			for (int i = 0; i < MapData::creatures.size(); i++)
 			{
-				if (creatures[i]->Age() >= 115)
+				if (MapData::creatures[i]->Age() >= 115)
 				{
-					int randIndex = Random::Next<int>(0, creatures.size() - 1);
-					if (randIndex != i && creatures[randIndex]->Age() >= 115)
+					int randIndex = Random::Next<int>(0, MapData::creatures.size() - 1);
+					if (randIndex != i && MapData::creatures[randIndex]->Age() >= 115
+						&& MapData::creatures.size() < ConfigManager::Settings().mapSizeX * ConfigManager::Settings().mapSizeX)
 					{
-						creatures.push_back(Creature::Combine(*creatures[i], *creatures[randIndex], totalCreatures));
+						MapData::AddCreature(Creature::Combine(*MapData::creatures[i],
+																	   *MapData::creatures[randIndex], totalCreatures));
 						totalCreatures++;
 						//LOG_TRACE("Combined creatures {0} and {1}", i, randIndex);
 					}
 				}
 
-				if (creatures[i]->IsDead())
+				if (MapData::creatures[i]->IsDead())
 				{
-					creatures.erase(creatures.begin() + i);
+					MapData::RemoveCreature(i);
 					i--;
 				}
 				else
 				{
-					creatures[i]->SimulateCycle();
+					MapData::creatures[i]->SimulateCycle();
 				}
 			}
 
@@ -115,7 +98,7 @@ namespace evol
 
 			MapData::cycleNum++;
 
-			uint32_t numCreatures = (uint32_t)creatures.size();
+			uint32_t numCreatures = (uint32_t)MapData::creatures.size();
 			stats.write(reinterpret_cast<char*>(&numCreatures), sizeof(numCreatures));
 			stats.flush();
 

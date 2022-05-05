@@ -9,7 +9,11 @@ namespace evol
 	Creature::Creature(const std::string& outputPath, int globalIndex, int32_t startCycle, const Genome& genome, Color col, int16_t x, int16_t y)
 		: genome(genome), color(col), posX(x), posY(y), outputPath(outputPath), globalIndex(globalIndex)
 	{
-		MapData::OccupyCell(posX, posY);
+		while (MapData::IsCellOccupied(posX, posY))
+		{
+			posX = Random::Next<uint16_t>(0, ConfigManager::Settings().mapSizeX - 1);
+			posY = Random::Next<uint16_t>(0, ConfigManager::Settings().mapSizeY - 1);
+		}
 
 		WriteData(startCycle);
 		WriteData(col.R);
@@ -74,8 +78,9 @@ namespace evol
 
 		for (int i = 0; i < numFood; i++)
 		{
-			int16_t diffX = MapData::food[i]->x - posX;
-			int16_t diffY = MapData::food[i]->y - posY;
+			auto foodPos = MapData::food[i]->GetPosition();
+			int16_t diffX = foodPos.x - posX;
+			int16_t diffY = foodPos.y - posY;
 			int32_t dist = diffX * diffX + diffY * diffY;
 
 			if (dist < minDist)
@@ -132,12 +137,27 @@ namespace evol
 		if (MapData::IsCellOccupied(newX, newY))
 			return false;
 
-		MapData::FreeCell(posX, posY);
+		MapData::MoveObjectTo(this, newX, newY);
 		posX = newX;
 		posY = newY;
-		MapData::OccupyCell(posX, posY);
 
 		return true;
+	}
+
+	MapObject* Creature::GetClosestObjOnAxis(int dx, int dy)
+	{
+		return nullptr;
+	}
+
+	float Creature::CalculateProximity(int x, int y)
+	{
+		float result = 0.0f;
+		float dist = sqrt((x - posX) * (x - posX) + (y - posY) * (y - posY));
+
+		if (dist > 0.5f)
+			result = (dist > 0) ? utils::Min(1.0f, 10.0f / dist) : utils::Max(-1.0f, 10.0f / dist);
+
+		return result;
 	}
 
 	bool Creature::IsDead()
@@ -155,6 +175,11 @@ namespace evol
 		return result;
 	}
 
+	Coord<uint16_t> Creature::GetPosition() const
+	{
+		return Coord<uint16_t>(posX, posY);
+	}
+
 	int Creature::Age()
 	{
 		return age;
@@ -162,8 +187,6 @@ namespace evol
 
 	Creature::~Creature()
 	{
-		MapData::FreeCell(posX, posY);
-
 		std::ofstream file(outputPath + "/" + std::to_string(globalIndex), std::ios::binary);
 
 		file.write(binaryData.data(), binaryData.size());
