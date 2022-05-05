@@ -14,7 +14,7 @@ namespace evol
 
 		virtual Color GetColor() const override
 		{
-			return Color::red();
+			return Color(255, 255, 0);
 		}
 
 		virtual bool IsObstacle() const override

@@ -1,7 +1,7 @@
 #pragma once
 
-#define INPUT_NEURONS 5
-#define INTERNAL_NEURONS 4
+#define INPUT_NEURONS 11
+#define INTERNAL_NEURONS 8
 #define OUTPUT_NEURONS 2
 
 #include "../Core.h"
@@ -63,7 +63,8 @@ namespace evol
 
 		void SimulateCycle();
 
-		MapObject* GetClosestObjOnAxis(int dx, int dy);
+		void UpdateAxis(int dx, int dy, int proximityNeuron, int colorNeuron);
+		std::shared_ptr<MapObject> GetClosestObjOnAxis(int dx, int dy);
 		float CalculateProximity(int x, int y);
 		bool IsDead();
 		int Age();

@@ -98,15 +98,10 @@ namespace evol
 			MapData::RemoveFood(closestFoodIndex);
 		}
 
-		if (minX == 0)
-			inputVals[3] = 0;
-		else
-			inputVals[3] = (minX > 0) ? utils::Min(1.0f, 10.0f / minX) : utils::Max(-1.0f, 10.0f / minX);
-
-		if (minY == 0)
-			inputVals[4] = 0;
-		else
-			inputVals[4] = (minY > 0) ? utils::Min(1.0f, 10.0f / minY) : utils::Max(-1.0f, 10.0f / minY);
+		UpdateAxis(1, 0, 3, 4);
+		UpdateAxis(1, 1, 5, 6);
+		UpdateAxis(0, 1, 7, 8);
+		UpdateAxis(0, -1, 9, 10);
 
 		internalVals = inputToInternalConn * inputVals + internalConn * internalVals;
 		outputVals = inputToOutputConn * inputVals + internalToOutputConn * internalVals;
@@ -121,12 +116,66 @@ namespace evol
 		else if (Sigmoid(outputVals(1)) < -0.5)
 			Move(0, -1);
 
-
 		WriteData(posX);
 		WriteData(posY);
 
 		age++;
 		health -= 1.0f;
+	}
+
+	void Creature::UpdateAxis(int dx, int dy, int proximityNeuron, int colorNeuron)
+	{
+		auto obj = GetClosestObjOnAxis(dx, dy);
+		if (obj != nullptr)
+		{
+			auto pos = obj->GetPosition();
+			inputVals[proximityNeuron] = CalculateProximity(pos.x, pos.y);
+
+			auto col = obj->GetColor();
+			inputVals[colorNeuron] = 0.299 * col.R + 0.587 * col.G + 0.114 * col.B;
+		}
+		else
+		{
+			inputVals[proximityNeuron] = 0;
+			inputVals[colorNeuron] = 0;
+		}
+	}
+
+	std::shared_ptr<MapObject> Creature::GetClosestObjOnAxis(int dx, int dy)
+	{
+		int xpos = posX + dx;
+		int ypos = posY + dy;
+
+		int xneg = posX - dx;
+		int yneg = posY - dy;
+
+		std::shared_ptr<MapObject> obj(nullptr);
+		while ((MapData::IsInsideBounds(xpos, ypos) || MapData::IsInsideBounds(xneg, yneg)) && obj == nullptr)
+		{
+			obj = MapData::GetObjAt(xpos, ypos);
+			if (obj != nullptr)
+				break;
+
+			obj = MapData::GetObjAt(xneg, yneg);
+
+			xpos += dx;
+			ypos += dy;
+			xneg -= dx;
+			yneg -= dy;
+		}
+
+		return obj;
+	}
+
+	float Creature::CalculateProximity(int x, int y)
+	{
+		float result = 0.0f;
+		float dist = sqrt((x - posX) * (x - posX) + (y - posY) * (y - posY));
+
+		if (dist > 0.5f)
+			result = (dist > 0) ? utils::Min(1.0f, 10.0f / dist) : utils::Max(-1.0f, 10.0f / dist);
+
+		return result;
 	}
 
 	bool Creature::Move(int moveX, int moveY)
@@ -142,22 +191,6 @@ namespace evol
 		posY = newY;
 
 		return true;
-	}
-
-	MapObject* Creature::GetClosestObjOnAxis(int dx, int dy)
-	{
-		return nullptr;
-	}
-
-	float Creature::CalculateProximity(int x, int y)
-	{
-		float result = 0.0f;
-		float dist = sqrt((x - posX) * (x - posX) + (y - posY) * (y - posY));
-
-		if (dist > 0.5f)
-			result = (dist > 0) ? utils::Min(1.0f, 10.0f / dist) : utils::Max(-1.0f, 10.0f / dist);
-
-		return result;
 	}
 
 	bool Creature::IsDead()
