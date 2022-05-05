@@ -66,10 +66,18 @@ namespace evol
 
 		static std::shared_ptr<MapObject> GetObjAt(int x, int y)
 		{
-			return objects[y * sizeX + x];
+			if(IsInsideBounds(x, y))
+				return objects[y * sizeX + x];
+
+			return std::shared_ptr<MapObject>(nullptr);
 		}
 
 		static int CurrentCycle() { return cycleNum; }
+
+		static bool IsInsideBounds(int x, int y)
+		{
+			return (x >= 0 && x < sizeX && y > 0 && y < sizeY);
+		}
 
 		static void AddFood()
 		{
