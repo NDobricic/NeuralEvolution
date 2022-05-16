@@ -46,7 +46,7 @@ namespace evol
 
 		bool Move(int moveX, int moveY);
 		template<typename T>
-		void WriteData(T& data)
+		void WriteData(T data)
 		{
 			char* dataPtr = reinterpret_cast<char*>(&data);
 			binaryData.insert(binaryData.end(), dataPtr, dataPtr + sizeof(data));

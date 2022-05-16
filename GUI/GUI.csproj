@@ -4,7 +4,7 @@
 	<OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <UseWindowsForms>true</UseWindowsForms>
-    <LangVersion>9.0</LangVersion>
+    <LangVersion>8</LangVersion>
     <Platforms>x64;x86</Platforms>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <ProjectGuid>0A04B0F6-5EBA-4278-88F3-41FF4932A5C1</ProjectGuid>
@@ -14,6 +14,7 @@
     <GenerateAssemblyDescriptionAttribute>false</GenerateAssemblyDescriptionAttribute>
     <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
     <GenerateAssemblyTitleAttribute>false</GenerateAssemblyTitleAttribute>
+    <Nullable>enable</Nullable>
   </PropertyGroup>
   
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">

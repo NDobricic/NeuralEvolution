@@ -16,14 +16,17 @@ namespace GUI
         NamedPipeServerStream namedPipeServer;
         StreamWriter pipeWriter;
 
-        SKBitmap currentFrame;
         CreatureData[] creatures;
         List<Point<UInt16>>[] food;
 
         bool animPlaying = false;
+        SKBitmap currentFrame;
+        private int frameNum = 0;
+        private float zoomFrac = 1.0f;
 
         const float MAX_ZOOM = 20;
         float zoom = 0;
+        private const int BorderSize = 3;
 
         List<Control> uiControls = new List<Control>();
 
@@ -44,6 +47,7 @@ namespace GUI
             uiControls.Add(skip100Btn);
             uiControls.Add(colorChkBox);
             uiControls.Add(statsBtn);
+            uiControls.Add(glControl);
 
             SetControlsEnabled(false);
             startBtn.Enabled = true;
@@ -166,7 +170,7 @@ namespace GUI
 
         private void UpdateFrame()
         {
-            UpdateFrame((int)numericUpDown.Value);
+            UpdateFrame(frameNum);
         }
 
         private void UpdateFrame(int index)
@@ -284,17 +288,18 @@ namespace GUI
 
             float height = width / Config.MapSizeX * Config.MapSizeY;
 
-            int border = 3;
             e.Surface.Canvas.DrawRect(0, 0, width, height, new SKPaint());
+            zoomFrac = (width - 2 * BorderSize) / Config.MapSizeX;
             //e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(border, border, width / (1.0f - zoom / MAX_ZOOM) - border,
             //                                                                     height / (1.0f - zoom / MAX_ZOOM) - border));
-            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(border, border, width - border,
-                                                                                 height - border));
+            e.Surface.Canvas.DrawBitmap(currentFrame, new SKRect(BorderSize, BorderSize, width - BorderSize,
+                                                                                         height - BorderSize));
         }
 
         private void numericUpDown1_ValueChanged(object sender, EventArgs e)
         {
-            UpdateFrame((int)numericUpDown.Value);
+            frameNum = (int)numericUpDown.Value;
+            UpdateFrame(frameNum);
 
             glControl.Refresh();
         }
@@ -345,6 +350,38 @@ namespace GUI
         {
             var statsForm = new StatsWindow(Path.Combine(Config.SimPath, Config.OutputPath, "stats"));
             statsForm.Show();
+        }
+
+        private void glControl_MouseClick(object sender, MouseEventArgs e)
+        {
+            var x = (int)((e.X - BorderSize) / zoomFrac);
+            var y = (int)((e.Y - BorderSize) / zoomFrac);
+
+            //currentFrame?.SetPixel(x, y, SKColors.Black);
+            //glControl.Refresh();
+
+            var creature = GetCreatureAtPos(x, y);
+
+            if (creature == null)
+                return;
+
+            var nnWindow = new NeuralNetWindow(creature);
+            nnWindow.Show();
+        }
+
+        private CreatureData? GetCreatureAtPos(int x, int y)
+        {
+            for (int i = 0; i < CreatureData.TotalCreatures; i++)
+            {
+                if (frameNum >= creatures[i].StartCycle && frameNum < creatures[i].StartCycle + creatures[i].AliveCycles)
+                {
+                    int posIndex = frameNum - creatures[i].StartCycle;
+                    if (x == creatures[i].Position[posIndex].X && y == creatures[i].Position[posIndex].Y)
+                        return creatures[i];
+                }
+            }
+
+            return null;
         }
     }
 }

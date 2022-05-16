@@ -7,9 +7,18 @@
 namespace evol
 {
 	Creature::Creature(const std::string& outputPath, int globalIndex, int32_t startCycle, const Genome& genome, Color col, int16_t x, int16_t y)
-		: genome(genome), color(col), posX(x), posY(y), outputPath(outputPath), globalIndex(globalIndex)
+		: color(col), posX(x), posY(y), globalIndex(globalIndex), outputPath(outputPath), genome(genome)
 	{
 		MapData::OccupyCell(posX, posY);
+
+		WriteData(static_cast<uint8_t>(INPUT_NEURONS));
+		WriteData(static_cast<uint8_t>(INTERNAL_NEURONS));
+		WriteData(static_cast<uint8_t>(OUTPUT_NEURONS));
+
+		int32_t numGenes = genome.Length();
+		WriteData(numGenes);
+		for (int i = 0; i < numGenes; i++)
+			WriteData(*genome.genes[i]);
 
 		WriteData(startCycle);
 		WriteData(col.R);

@@ -59,6 +59,7 @@ namespace GUI
             this.glControl.Size = new System.Drawing.Size(772, 772);
             this.glControl.TabIndex = 0;
             this.glControl.VSync = false;
+            this.glControl.MouseClick += new System.Windows.Forms.MouseEventHandler(this.glControl_MouseClick);
             // 
             // tableLayoutPanel1
             // 
