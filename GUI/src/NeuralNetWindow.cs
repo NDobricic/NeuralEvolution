@@ -133,9 +133,27 @@ namespace GUI
 
         private void DrawInputNeurons(SKCanvas canvas)
         {
+            Action<int, string> drawText = (index, text) => {
+                var center = GetInputNeuronPos(index, out var radius);;
+                SKFont font = new SKFont(SKTypeface.FromFamilyName("Segoe UI"), radius / text.Length * 2);
+                canvas.DrawText(text, center.X, center.Y, font, new SKPaint() { TextAlign = SKTextAlign.Center });
+            };
+
+            Dictionary<int, string> neuronNames = new Dictionary<int, string>()
+            {
+                {0, "Bias"},
+                {1, "PosX"},
+                {2, "PosY"},
+                {3, "FoodX"},
+                {4, "FoodY"},
+            };
+
             for (int i = 0; i < creature.NumInputs; i++)
             {
-                canvas.DrawCircle(GetInputNeuronPos(i, out var radius), radius, neuronPaint);
+                var center = GetInputNeuronPos(i, out var radius);
+                canvas.DrawCircle(center, radius, neuronPaint);
+
+                drawText(i, neuronNames[i]);
             }
         }
 

@@ -92,7 +92,7 @@ namespace GUI
             {
                 MessageBox.Show("An error has occured while loading settings. Exiting...", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                 Console.WriteLine("An error has occured while loading settings. Exiting...");
-                return;
+                Application.Exit();
             }
         }
 
